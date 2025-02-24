@@ -13,7 +13,7 @@ import chatRouter from "./routes/chatRoutes.js";
 dotenv.config();
 
 const app = express();
-const PORT = 'https://real-estate-app-el42.onrender.com'|| process.env.PORT || 3200;
+const PORT = process.env.PORT || 8200;
 
 const _dirname = path.resolve();
 
