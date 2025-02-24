@@ -2,7 +2,7 @@ import { Server } from "socket.io";
 
 const io = new Server({
   cors: {
-    origin: "http://localhost:5173",
+    origin: "https://real-estate-ui-ld3n.onrender.com ",
   },
 });
 
@@ -24,15 +24,16 @@ const getUser = (userId) => {
 };
 
 io.on("connection", (socket) => {
-  console.log(socket.id)
+  console.log(socket.id);
   socket.on("newUser", (userId) => {
     addUsers(userId, socket.id);
-    console.log(onlineUsers)
+    console.log(onlineUsers);
   });
 
   socket.on("sendMessage", ({ receiverId, data }) => {
+    console.log(receiverId);
     const receiver = getUser(receiverId);
-    console.log(receiver)
+    console.log(receiver);
     io.to(receiver.socketId).emit("getMessage", data);
   });
 

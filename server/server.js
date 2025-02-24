@@ -2,6 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cors from "cors";
+import path from "path";
 
 import authRouter from "./routes/authRoutes.js";
 import postsRouter from "./routes/postRoutes.js";
@@ -12,10 +13,12 @@ import chatRouter from "./routes/chatRoutes.js";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3200;
+const PORT = 'https://real-estate-app-el42.onrender.com'|| process.env.PORT || 3200;
+
+const _dirname = path.resolve();
 
 // Cookie parser middleware
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({ origin: "https://real-estate-ui-ld3n.onrender.com", credentials: true }));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -29,9 +32,14 @@ const LoggerMiddleware = (req, res, next) => {
 app.use(LoggerMiddleware);
 
 app.use("/api/auth", authRouter);
-app.use("/api/user", userRouter)
+app.use("/api/user", userRouter);
 app.use("/api/posts", postsRouter);
 app.use("/api/messages", messageRouter);
 app.use("/api/chats", chatRouter);
+
+// app.use(express.static(path.join(_dirname, "/client/dist")));
+// app.get("*", (_, res) => {
+//   res.sendFile(path.resolve(_dirname, "client", "dist", "index.html"));
+// });
 
 app.listen(PORT, () => console.log(`server is running @ localhost:${PORT}`));
