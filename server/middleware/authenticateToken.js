@@ -3,6 +3,8 @@ import asyncHandler from "./asyncHandler.js";
 import prisma from "../lib/prisma.js";
 
 const authenticateToken = asyncHandler(async (req, res, next) => {
+  console.log("Cookies received: ", req.cookies);
+
   const token = req.cookies.jwt;
   console.log(token)
 
