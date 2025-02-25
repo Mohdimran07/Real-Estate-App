@@ -4,6 +4,7 @@ import prisma from "../lib/prisma.js";
 
 const authenticateToken = asyncHandler(async (req, res, next) => {
   const token = req.cookies.jwt;
+  console.log(token)
 
   if (!token) {
     return res.status(401).json({ error: true, message: "Unauthorized" });
