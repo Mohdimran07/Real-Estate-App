@@ -10,6 +10,8 @@ const authenticateToken = asyncHandler(async (req, res, next) => {
   }
 
   const decoded = jwt.verify(token, process.env.JWT_SECERET_KEY);
+  console.log("JWT Expiration:", new Date(decoded.exp * 1000).toUTCString());
+  console.log("Server Time:", new Date().toUTCString());
 
   req.user = await prisma.user.findUnique({
     where: { id: decoded.id },
