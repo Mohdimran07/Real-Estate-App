@@ -14,6 +14,7 @@ const getUsers = asyncHandler(async (req, res) => {
 
 const getUserProfile = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  console.log(id)
   if (!id || typeof id !== "string") {
     return res.status(400).json({ message: "Invalid ID format" });
   }
@@ -135,25 +136,25 @@ const profilePosts = asyncHandler(async (req, res) => {
   try {
     const [userPosts, savedPosts] = await Promise.all([
       prisma.post.findMany({
-          where: { userId: userTokenId },
+        where: { userId: userTokenId },
       }),
       prisma.savedPost.findMany({
-          where: { userId: userTokenId },
-          include: {
-              post: true,
-          },
+        where: { userId: userTokenId },
+        include: {
+          post: true,
+        },
       }),
-  ]);
+    ]);
 
-  // Extract saved posts from savedPosts
-  const savedPost = savedPosts.map(({ post }) => post);
+    // Extract saved posts from savedPosts
+    const savedPost = savedPosts.map(({ post }) => post);
 
-  res.status(200).json({
-    error: false,
-    data: userPosts,
-    saved: savedPost,
-    message: "Fetched all user posts!",
-});
+    res.status(200).json({
+      error: false,
+      data: userPosts,
+      saved: savedPost,
+      message: "Fetched all user posts!",
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({
@@ -161,6 +162,37 @@ const profilePosts = asyncHandler(async (req, res) => {
       message: "An error occurred while fetching posts.",
       details: err.message,
     });
+  }
+});
+const getNotifications = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  console.log("userTokenId", userId);
+  // // Validate userId
+  // if (!userId || !ObjectId.isValid(userId)) {
+  //   console.error("Invalid userId:", userId);
+  //   return res.status(400).json({ error: true, message: "Invalid user ID!" });
+  // }
+
+  try {
+    const notifications = await prisma.chat.count({
+      where: {
+        userIDs: {
+          hasSome: [userId],
+        },
+        NOT: {
+          seenBy: {
+            hasSome: [userId],
+          },
+        },
+      },
+    });
+    console.log(notifications);
+    res.status(200).json({ error: false, data: notifications });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: true, message: "Failed to get notifications!" });
   }
 });
 
@@ -171,4 +203,5 @@ export {
   deleteUser,
   savePost,
   profilePosts,
+  getNotifications,
 };

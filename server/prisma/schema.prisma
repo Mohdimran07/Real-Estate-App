@@ -4,6 +4,8 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+//whenever we made any changes here we need to run `npx prisma DB push` to generate the prisma client.
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,6 +14,7 @@ datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
+
 
 model User {
   id        String      @id @default(auto()) @map("_id") @db.ObjectId
@@ -86,7 +89,7 @@ model SavedPost {
 
 model Chat {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  users       User[]    @relation(fields: [userIDs], references: [id])
+  users       User[]    @relation(fields: [userIDs], references: [id]) //multiply users.
   userIDs     String[]  @db.ObjectId
   createdAt   DateTime  @default(now())
   seenBy      String[]  @db.ObjectId
