@@ -22,6 +22,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({ origin: "https://real-estate-ui-ld3n.onrender.com",  credentials: true }));
+// app.use(cors({ origin: "http://localhost:3200",  credentials: true }));
 
 
 const LoggerMiddleware = (req, res, next) => {

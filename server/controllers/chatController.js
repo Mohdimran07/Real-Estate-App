@@ -47,7 +47,7 @@ const createChat = asyncHandler(async (req, res) => {
 
     res
       .status(201)
-      .json({ error: false, message: "Chat created!", data: newChat });
+      .json({ error: false, message: "Chat created!", data: [newChat] });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: true, message: "Failed to get chat!" });

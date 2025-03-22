@@ -4,29 +4,49 @@ import asyncHandler from "../middleware/asyncHandler.js";
 
 const getPosts = asyncHandler(async (req, res) => {
   const query = req.query;
-  // console.log(query);
+  const page = parseInt(query.page) || 1; // Default to page 1
+  const limit = parseInt(query.limit) || 10; // Default to 10 posts per page
+  const skip = (page - 1) * limit;
+  
   try {
-    const posts = await prisma.post.findMany({
-      where: {
-        city: query.city || undefined,
-        type: query.type || undefined,
-        property: query.property || undefined,
-        bedroom: parseInt(query.bedroom) || undefined,
-        price: {
-          gte: parseInt(query.minPrice) || 0,
-          lte: parseInt(query.maxPrice) || 1000000,
-        },
-      },
-    });
 
-    setTimeout(() => {
-      res.status(200).json({
-        error: false,
-        message: "Fetched all posts",
-        data: posts,
-        query: query,
-      });
-    }, 3000);
+    // Dynamically build the filter to exclude undefined values
+    let whereClause = {};
+    
+    if (query.city) whereClause.city = query.city;
+    if (query.type) whereClause.type = query.type;
+    if (query.property) whereClause.property = query.property;
+    if (query.bedroom) whereClause.bedroom = parseInt(query.bedroom);
+    if (query.minPrice || query.maxPrice) {
+      whereClause.price = {
+        gte: query.minPrice ? parseInt(query.minPrice) : 0,
+        lte: query.maxPrice ? parseInt(query.maxPrice) : 1000000,
+      };
+    }
+
+    const posts = await prisma.post.findMany({
+      where: whereClause,
+      skip: skip,
+      take: limit,
+    });
+  
+    const totalPosts = await prisma.post.count({
+      where: whereClause,
+    });
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    res.status(200).json({
+      error: false,
+      message: "Fetched posts",
+      data: posts,
+      pagination: {
+        currentPage: page,
+        totalPages: totalPages,
+        totalItems: totalPosts,
+        itemsPerPage: limit,
+      },
+      query: query,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: true, message: "Failed to get posts!" });
@@ -57,7 +77,6 @@ const getPost = asyncHandler(async (req, res) => {
     let isSaved = false;
     if (token) {
       const payload = jwt.verify(token, process.env.JWT_SECERET_KEY);
-      console.log(payload)
       const saved = await prisma.savedPost.findUnique({
         where: {
           userId_postId: {
@@ -84,9 +103,8 @@ const getPost = asyncHandler(async (req, res) => {
 
 const createPost = asyncHandler(async (req, res) => {
   const body = req.body;
-  console.log(body.postDetail);
   const tokenUserId = req.user;
-  console.log(tokenUserId);
+
   try {
     const newPost = await prisma.post.create({
       data: {
@@ -97,6 +115,7 @@ const createPost = asyncHandler(async (req, res) => {
         },
       },
     });
+
     res
       .status(201)
       .json({ error: false, message: "Post created", data: newPost });

@@ -14,7 +14,6 @@ const getUsers = asyncHandler(async (req, res) => {
 
 const getUserProfile = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  console.log(id)
   if (!id || typeof id !== "string") {
     return res.status(400).json({ message: "Invalid ID format" });
   }
@@ -95,7 +94,6 @@ const deleteUser = asyncHandler(async (req, res) => {
 const savePost = asyncHandler(async (req, res) => {
   const postId = req.body.postId;
   const tokenUserId = req.user.id;
-  console.log("[userTokenId]", tokenUserId);
 
   try {
     const savedPost = await prisma.savedPost.findUnique({
