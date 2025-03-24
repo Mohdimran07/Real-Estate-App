@@ -36,7 +36,7 @@ const registerUser = asyncHandler(async (req, res) => {
       generateToken(res, newUser._id),
         res.status(201).json({
           error: false,
-          msg: "User Create Successfuly",
+          message: "User Created Successfuly",
           data: {
             id: newUser._id,
             name: newUser.name,

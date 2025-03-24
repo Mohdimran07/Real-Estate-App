@@ -29,7 +29,6 @@ const getUser = (userId) => {
 io.on("connection", (socket) => {
   socket.on("newUser", (userId) => {
     addUsers(userId, socket.id);
-    console.log("onlineUsers", onlineUsers);
   });
 
   socket.on("sendMessage", ({ receiverId, data }) => {
@@ -39,9 +38,9 @@ io.on("connection", (socket) => {
 
   // Add typing event listeners
   socket.on("typing", ({ receiverId, isTyping }) => {
-    console.log("typing!!!", receiverId)
+  
     const receiver = getUser(receiverId);
-    console.log(receiver)
+
     if (receiver) {
       io.to(receiver.socketId).emit("typing", {
         isTyping,

@@ -109,7 +109,7 @@ const savePost = asyncHandler(async (req, res) => {
       await prisma.savedPost.delete({
         where: { id: savedPost.id },
       });
-      res.status(200).json({ message: "Post removed from saved list!" });
+      res.status(200).json({error: false, message: "Post removed from saved list!" });
     } else {
       console.log({
         userId: tokenUserId,
@@ -121,7 +121,7 @@ const savePost = asyncHandler(async (req, res) => {
           postId,
         },
       });
-      res.status(200).json({ message: "Post saved list!" });
+      res.status(200).json({error: false, message: "Post saved list!" });
     }
   } catch (error) {
     console.log(error);
